@@ -78,8 +78,12 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
-        updateEntities(dt);
-        // checkCollisions();
+        // updateEntities performed only after character selection (gameStarted)
+        if (player.gameStarted) {
+            updateEntities(dt);
+        }
+        // Enemy.checkCollisions called by Enemy.update, no need to call it here
+        //checkCollisions();    
     }
 
     /* This is called by the update function and loops through all of the
@@ -173,7 +177,11 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png'
     ]);
     Resources.onReady(init);
 

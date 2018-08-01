@@ -1,3 +1,63 @@
 body {
     text-align: center;
 }
+
+/*
+ * Styles for the player selection and score panel
+ */
+
+.characters,
+.score-panel {
+    max-width: 505px;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.score-panel .hearts {
+    width: 40%;
+}
+
+.score-panel .hearts li {
+    list-style: none;
+    display: inline-block;
+}
+
+.score-panel .score,
+.score-panel .score-container {
+    width: 40%;
+    padding: 3% 0 5% 0;
+}
+
+.select-header {
+    width: 100%;
+}
+
+.select-player [class*='char-'] {
+    width: 20%;
+    height: 120px;
+}
+
+.char-boy {
+    background: url('../images/char-boy.png') bottom/cover;
+}
+
+.char-cat-girl {
+    background: url('../images/char-cat-girl.png') bottom/cover;
+
+}
+.char-horn-girl {
+    background: url('../images/char-horn-girl.png') bottom/cover;
+}
+
+.char-pink-girl {
+    background: url('../images/char-pink-girl.png') bottom/cover;
+}
+
+.char-princess-girl {
+    background: url('../images/char-princess-girl.png') bottom/cover;
+}
+
+.hide {
+    display: none;
+}
