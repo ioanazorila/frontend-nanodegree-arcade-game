@@ -6,7 +6,7 @@ class Enemy {
      * @param {number} x - the x coordinate
      * @param {number} y - the y coordinate
      */
-    constructor(x, y) {
+    constructor(x = -100, y) {
         this.x = x;
         this.y = y;
         this.sprite = 'images/enemy-bug.png';
@@ -48,7 +48,7 @@ class Enemy {
          * in order to avoid fake collisions with transparent part of image, player's crown, etc.
          */
         if (Math.abs(player.x - this.x) < 70 && Math.abs(player.y - this.y) < 30) {
-            player.updateLose();
+            player.meetEnemy();
         }
     }
 
@@ -73,7 +73,7 @@ class Player {
      * @param {number} x - the x coordinate
      * @param {number} y - the y coordinate
      */
-    constructor(x, y) {
+    constructor(x = 202, y = 390) {
         this.x = x;
         this.y = y;
         this.sprite = 'images/char-princess-girl.png';
@@ -103,16 +103,16 @@ class Player {
                 this.name = 'The princess';
                 break;
             case 'images/char-boy.png':
-                this.name = 'The boy';
+                this.name = 'The alien';
                 break;
             case 'images/char-cat-girl.png':
-                this.name = 'Cat girl';
+                this.name = 'Kitty';
                 break;
             case 'images/char-horn-girl.png':
-                this.name = 'Horn girl';
+                this.name = 'The viking';
                 break;
             case 'images/char-pink-girl.png':
-                this.name = 'Pink girl';
+                this.name = 'Barbie';
                 break;
         }
     }
@@ -144,7 +144,7 @@ class Player {
             case 'up':
                 if (this.y <= 85) {
                     // Player reaches the water
-                    this.updateWin();
+                    this.reachWater();
                 } else {
                     this.y -= 85;
                 }
@@ -169,7 +169,7 @@ class Player {
     /**
      * Update player life, score and position in case of collition with enemy
      */
-    updateLose() {
+    meetEnemy() {
         this.reset();
         this.lives--;
         this.score -= 5;
@@ -183,7 +183,7 @@ class Player {
     /**
      * Update player life, score and position if player reaches the water
      */
-    updateWin() {
+    reachWater() {
         this.reset();
         this.score += 5 + this.level;
     }
@@ -195,6 +195,25 @@ class Player {
     levelUp() {
         this.enemiesAvoided ++;
         this.level = 1 + Math.floor(this.enemiesAvoided/5);
+    }
+
+    /** 
+     * Update score when player collects a gem
+     * No. of points depends on gem type
+     * @param {string} img - sprite of gem that was collected
+     */
+    collectGem(img){
+        switch (img) {
+            case 'images/Gem Blue-130.png':
+                this.score += 1;
+                break;
+            case 'images/Gem Green-130.png':
+                this.score += 2;
+                break;
+            case 'images/Key-130.png':
+                this.score += 5;
+                break;
+        }
     }
 
     /**
@@ -227,12 +246,57 @@ class Player {
 }
 
 
+//////////////////////////////////////// Gems ////////////////////////////////////////
+class Gem {
+    /**
+     * Create a gem
+     * no parameters, random position and image for new gem
+     */
+    constructor(){
+        this.x = gemX[Math.floor(Math.random() * 5)];
+        this.y = gemY[Math.floor(Math.random() * 3)]
+        this.sprite = gemSprite[Math.floor(Math.random() * 3)];
+    }
+
+    /**
+     * Draw the gem
+     */
+    render() {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
+
+    /**
+     * Detect collisions between player and current gem
+     */
+    checkCollisions() {
+        /* Detect if image of player and image of current gem overlap.
+         * y delta lower than width/height of player image,
+         * in order to avoid fake collisions with transparent part of image, player's crown, etc.
+         */
+        if (player.x === this.x && Math.abs(player.y - this.y) < 50) {
+            player.collectGem(this.sprite);
+            this.reset();
+        }
+    }
+
+    /**
+     * Reset gem in a random position, after player has collected the gem
+     */
+    reset() {
+        this.x = gemX[Math.floor(Math.random() * 5)];
+        this.y = gemY[Math.floor(Math.random() * 3)]
+        this.sprite = gemSprite[Math.floor(Math.random() * 3)];
+
+    }
+}
+
+
 
 ////////////////////// Global variables and instantiating objects /////////////////////
 
-const player = new Player (202, 390);
+const player = new Player();
 
-// Y coordinates for each row of stone blocks
+// Y coordinates for placing enemies on each row of stones
 const enemyY = [60, 145, 230];
 
 const enemy1 = new Enemy(-100, enemyY[0]);
@@ -240,8 +304,20 @@ const enemy2 = new Enemy(-100, enemyY[1]);
 const enemy3 = new Enemy(-100, enemyY[2]);
 const gameEnemies = [enemy1, enemy2, enemy3];
 
-// allEnemies will be set after character selection
+// X and Y coordinates for placing gems on each row/column of stones
+const gemX = [0, 101, 202, 303, 404];
+const gemY = [80, 165, 250];
+const gemSprite = [ 'images/Gem Blue-130.png',
+                    'images/Gem Green-130.png',
+                    'images/Key-130.png'];
+
+const gem1 = new Gem();
+const gem2 = new Gem();
+const gameGems = [gem1, gem2];
+
+// allEnemies and allGems will be set after character selection
 let allEnemies = [];
+let allGems = [];
 
 
 /////////////////////////////////// Event listeners ///////////////////////////////////
@@ -273,6 +349,7 @@ document.querySelector('.characters').addEventListener('click', function (e) {
 
     // Start the game
     allEnemies = gameEnemies;
+    allGems = gameGems;
     player.startGame();
 
     // Hide "Select player" menu, show score panel
