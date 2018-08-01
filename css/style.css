@@ -1,36 +1,23 @@
 body {
     text-align: center;
+    background: url('../images/bright_squares_@2X.png');
 }
 
+
 /*
- * Styles for the player selection and score panel
+ * Styles for the "Select player" menu
  */
 
-.characters,
-.score-panel {
+.characters {
     max-width: 505px;
     margin: auto;
     display: flex;
     flex-wrap: wrap;
-}
-
-.score-panel .hearts {
-    width: 40%;
-}
-
-.score-panel .hearts li {
-    list-style: none;
-    display: inline-block;
-}
-
-.score-panel .score,
-.score-panel .score-container {
-    width: 40%;
-    padding: 3% 0 5% 0;
-}
+ }
 
 .select-header {
     width: 100%;
+    font: 25px 'Bungee', sans-serif;
 }
 
 .select-player [class*='char-'] {
@@ -38,26 +25,57 @@ body {
     height: 120px;
 }
 
-.char-boy {
-    background: url('../images/char-boy.png') bottom/cover;
+.char-boy {background: url('../images/char-boy.png') bottom/cover;}
+.char-cat-girl {background: url('../images/char-cat-girl.png') bottom/cover;}
+.char-horn-girl {background: url('../images/char-horn-girl.png') bottom/cover;}
+.char-pink-girl {background: url('../images/char-pink-girl.png') bottom/cover;}
+.char-princess-girl {background: url('../images/char-princess-girl.png') bottom/cover;}
+
+
+/*
+ * Styles for the score panel
+ */
+
+.score-panel {
+    max-width: 505px;
+    margin: 185px auto -50px auto;
+    display: flex;
+    flex-wrap: wrap;
 }
 
-.char-cat-girl {
-    background: url('../images/char-cat-girl.png') bottom/cover;
-
-}
-.char-horn-girl {
-    background: url('../images/char-horn-girl.png') bottom/cover;
+.score-panel .hearts {
+    width: 20%;
+    color: crimson;
+    font-size: 1.8em;
 }
 
-.char-pink-girl {
-    background: url('../images/char-pink-girl.png') bottom/cover;
+.score-panel .hearts li {
+    list-style: none;
+    display: inline-block;
 }
 
-.char-princess-girl {
-    background: url('../images/char-princess-girl.png') bottom/cover;
+.score-panel .score-container,
+.score-panel .level-container {
+    width: 35%;
+    padding: 6% 0 5% 0;
+    font: 700 25px 'Lato', sans-serif;
+    text-align: center;
 }
 
+
+/*
+ * Styles for the Win/Lose message
+ */
+
+.win-lose-message {
+    margin: 144px auto 0 auto;
+    font: 600 20px 'Lato', sans-serif;
+}
+
+
+/*
+ * Hide elements on webpage
+ */
 .hide {
     display: none;
 }

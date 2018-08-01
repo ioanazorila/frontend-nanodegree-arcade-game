@@ -1,47 +1,66 @@
 /////////////////////////////////////// Enemies ///////////////////////////////////////
 
 class Enemy {
+    /**
+     * Create an enemy
+     * @param {number} x - the x coordinate
+     * @param {number} y - the y coordinate
+     */
     constructor(x, y) {
         this.x = x;
         this.y = y;
         this.sprite = 'images/enemy-bug.png';
-        // Random speed [100...400) for new enemy
-        this.speed = 100 + Math.random() * 300;
+
+        // Random speed [50...250) for new enemy
+        this.speed = 50 + Math.random() * 200;
     }
 
-    // Update the enemy's position, required method for game
-    // Parameter: dt, a time delta between ticks
-    update(dt) {
-        this.x += this.speed * dt;
-        // Detect collisions between player and this enemy
-        this.checkCollisions();
-        // If enemy reaches right side of map, reset enemy
-        if (this.x >= 505) {
-            this.reset();
-        }
-    }
-
-    // Reset enemy on left side of map, choosing a random Y position and random speed
-    reset() {
-        this.x = -100;
-        this.y = enemyY[Math.floor(Math.random() * 3)];
-        this.speed = 100 + Math.random() * 300;
-    }
-
-    // Draw the enemy on the screen, required method for game
+    /**
+     * Draw the enemy on screen
+     */
     render() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 
-    // Detect collisions between player and the current enemy
+    /**
+     * Update the enemy's position
+     * @param {number} dt - a time delta between ticks
+     */
+    update(dt) {
+        this.x += this.speed * dt;
+
+        // Check for collision between player and this enemy
+        this.checkCollisions();
+
+        //If enemy reaches right side of screen, level up player and reset enemy
+        if (this.x >= 505) {
+            player.levelUp();
+            this.reset();
+        }
+    }
+
+    /**
+     * Detect collisions between player and current enemy
+     */
     checkCollisions() {
-        // x/y delta lower than width/height of player image
-        // in order to avoid fake collisions with blank part of image, player's crown...
+        /* Detect if image of player and image of current enemy overlap.
+         * x/y delta lower than width/height of player image,
+         * in order to avoid fake collisions with transparent part of image, player's crown, etc.
+         */
         if (Math.abs(player.x - this.x) < 70 && Math.abs(player.y - this.y) < 30) {
             player.updateLose();
         }
     }
 
+    /**
+     * Reset enemy on left side of screen, choosing a random Y position
+     * Enemy speed increases with player level
+     */
+    reset() {
+        this.x = -100;
+        this.y = enemyY[Math.floor(Math.random() * 3)];
+        this.speed = 50 * player.level + Math.random() * 200;
+    }
 }
 
 
@@ -49,53 +68,74 @@ class Enemy {
 /////////////////////////////////////// Player ///////////////////////////////////////
 
 class Player {
+    /**
+     * Create a player
+     * @param {number} x - the x coordinate
+     * @param {number} y - the y coordinate
+     */
     constructor(x, y) {
         this.x = x;
         this.y = y;
         this.sprite = 'images/char-princess-girl.png';
-        this.name = "The princess"
+        this.name = 'The princess';
         this.gameStarted = false;
+        this.level = 1;
         this.lives = 3;
         this.score = 0;
+        this.enemiesAvoided = 0;
     }
 
-    // Draw player on screen
+    /**
+     * Draw player on screen
+     */
     render() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 
-    // Change character image and name
+    /**
+     * Change character image and name
+     * @param {string} sprite - path to image selected by user
+     */
     selectPlayer(sprite) {
         this.sprite = sprite;
         switch (this.sprite) {
-            case "images/char-princess-girl.png":
-                this.name = "The princess";
+            case 'images/char-princess-girl.png':
+                this.name = 'The princess';
                 break;
-            case "images/char-boy.png":
-                this.name = "The boy";
+            case 'images/char-boy.png':
+                this.name = 'The boy';
                 break;
-            case "images/char-cat-girl.png":
-                this.name = "Cat girl";
+            case 'images/char-cat-girl.png':
+                this.name = 'Cat girl';
                 break;
-            case "images/char-horn-girl.png":
-                this.name = "Horn girl";
+            case 'images/char-horn-girl.png':
+                this.name = 'Horn girl';
                 break;
-            case "images/char-pink-girl.png":
-                this.name = "Pink girl";
+            case 'images/char-pink-girl.png':
+                this.name = 'Pink girl';
                 break;
         }
-        
     }
 
-    // Start new game (allow player to move, update score)
+    /**
+     * Start new game
+     */
     startGame() {
-        this.gameStarted = true;
+        // Reset level, lives and score and update hearts in score panel
+        this.level = 1;
         this.lives = 3;
         this.score = 0;
+        this.enemiesAvoided = 0;
         resetHearts();
+
+        // Allow player to move
+        this.gameStarted = true;
     }
 
-    // Move player according to user input
+    /**
+     * Move player according to user input
+     * @param {string} inputKey - arrow key pressed by the user
+     */
     handleInput(inputKey) {
         switch (inputKey) {
             case 'left':
@@ -118,34 +158,70 @@ class Player {
         }
     }
 
-    // Update score on webpage
+    /**
+     * Update score and level on webpage
+     */
     update() {
-        document.querySelector('.score').innerHTML = this.score;
+        document.querySelector('.score').innerHTML =`Score: ${this.score}`;
+        document.querySelector('.level').innerHTML = `Level: ${this.level}`;
     }
     
-    // Update player life, score and position in case of collision with enemy
+    /**
+     * Update player life, score and position in case of collition with enemy
+     */
     updateLose() {
         this.reset();
         this.lives--;
-        this.score--;
+        this.score -= 5;
         if (this.lives > 0 ) {
             removeHeart();
         } else {
-            this.gameStarted = false;
-            gameOver();
+            this.gameOver();
         }
     }
 
-    // Update player life, score and position if player reaches the water
+    /**
+     * Update player life, score and position if player reaches the water
+     */
     updateWin() {
         this.reset();
-        this.score += 5;
+        this.score += 5 + this.level;
     }
 
-    // Reset initial position of player
+    /** 
+     * Increase number of enemies avoided, when an enemy reaches right side of map
+     * Increase level every 5 avoided enemies
+     */
+    levelUp() {
+        this.enemiesAvoided ++;
+        this.level = 1 + Math.floor(this.enemiesAvoided/5);
+    }
+
+    /**
+     * Reset player to his initial position
+     */
     reset() {
         this.x = 202;
         this.y = 390;
+    }
+
+    /**
+     * Stop the game, then update the Win/Lose message at the end of game
+     */
+    gameOver() {
+        // Stop player and enemy movement
+        this.gameStarted = false;
+
+        // Update content of Win/Lose message
+        if (this.score < 0) {
+            document.querySelector('.win-header').innerHTML = `${this.name} loses, with ${this.score} points!`;
+        } else {
+            document.querySelector('.win-header').innerHTML = `${this.name} wins, with ${this.score} points!`;
+        }
+        
+        // Hide score panel, show Win/Lose message
+        document.querySelector('.score-panel').classList.add('hide');
+        document.querySelector('.win-lose-message').classList.remove('hide');
     }
 
 }
@@ -168,10 +244,11 @@ const gameEnemies = [enemy1, enemy2, enemy3];
 let allEnemies = [];
 
 
-
 /////////////////////////////////// Event listeners ///////////////////////////////////
 
-// This listens for key presses and sends the keys to your Player.handleInput() method.
+/**
+ * Listen for key presses and send the keys to the Player.handleInput() method
+ */
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'left',
@@ -185,41 +262,48 @@ document.addEventListener('keyup', function(e) {
 });
 
 
-// Listen for click on "Select player" images
+/**
+ * Listen for click on "Select player" images
+ */
 document.querySelector('.characters').addEventListener('click', function (e) {
     const selectedPlayer = e.target.classList.item(0);
 
     // Change character image according to selection
-    player.selectPlayer('images/' + selectedPlayer + '.png');
+    player.selectPlayer(`images/${selectedPlayer}.png`);
 
-    // Start game
+    // Start the game
     allEnemies = gameEnemies;
     player.startGame();
 
-    // Hide "select player" menu, show score panel
+    // Hide "Select player" menu, show score panel
     document.querySelector('.select-player').classList.add('hide');
     document.querySelector('.score-panel').classList.remove('hide');
 });
 
 
-// Listen for click on "Restart game" button
+/**
+ * Listen for click on "Restart game" button
+ */
 document.querySelector('.fa-sync-alt').addEventListener('click', function (e) {
-    // Hide Win/Lose message, show "select player" menu
+    // Hide "Win/Lose message", show "Select player" menu
     document.querySelector('.win-lose-message').classList.add('hide');
     document.querySelector('.select-player').classList.remove('hide');
-
 });
-
 
 
 /////////////////////////////////// Other functions ///////////////////////////////////
 
+/**
+ * Remove a heart from score panel when player loses a life
+ */
 function removeHeart() {
     document.querySelector('.fas.fa-heart').classList.add('far');
     document.querySelector('.fas.fa-heart').classList.remove('fas');
 }
 
-
+/**
+ * Reset score panel to display 3 full lives when user restarts the game
+ */
 function resetHearts() {
     const hearts = document.querySelectorAll('.fa-heart');
     for (heart of hearts) {
@@ -227,18 +311,3 @@ function resetHearts() {
         heart.classList.add('fas');
     }
 }
-
-
-function gameOver() {
-    // Update content of Win/Lose message
-    if (player.score < 0) {
-        document.querySelector('.win-header').innerHTML = player.name + " loses, with " + player.score + " points!";
-    } else {
-        document.querySelector('.win-header').innerHTML = player.name + " wins, with " + player.score + " points!";
-    }
-    
-    // Hide score panel, show Win/Lose message
-    document.querySelector('.score-panel').classList.add('hide');
-    document.querySelector('.win-lose-message').classList.remove('hide');
-}
-
