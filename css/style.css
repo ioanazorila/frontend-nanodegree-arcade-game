@@ -1,5 +1,6 @@
 body {
     text-align: center;
+    /* background image from https://www.toptal.com/designers/subtlepatterns/ */
     background: url('../images/bright_squares_@2X.png');
 }
 
@@ -17,7 +18,7 @@ body {
 
 .select-header {
     width: 100%;
-    font: 25px 'Bungee', sans-serif;
+    font: 700 25px 'Bungee', sans-serif;
 }
 
 .select-player [class*='char-'] {
@@ -25,11 +26,25 @@ body {
     height: 120px;
 }
 
-.char-boy {background: url('../images/char-boy.png') bottom/cover;}
-.char-cat-girl {background: url('../images/char-cat-girl.png') bottom/cover;}
-.char-horn-girl {background: url('../images/char-horn-girl.png') bottom/cover;}
-.char-pink-girl {background: url('../images/char-pink-girl.png') bottom/cover;}
-.char-princess-girl {background: url('../images/char-princess-girl.png') bottom/cover;}
+.char-boy {
+    background: url('../images/char-boy.png') bottom/cover;
+}
+
+.char-cat-girl {
+    background: url('../images/char-cat-girl.png') bottom/cover;
+}
+
+.char-horn-girl {
+    background: url('../images/char-horn-girl.png') bottom/cover;
+}
+
+.char-pink-girl {
+    background: url('../images/char-pink-girl.png') bottom/cover;
+}
+
+.char-princess-girl {
+    background: url('../images/char-princess-girl.png') bottom/cover;
+}
 
 
 /*
@@ -43,19 +58,19 @@ body {
     flex-wrap: wrap;
 }
 
-.score-panel .hearts {
+.hearts {
     width: 20%;
     color: crimson;
     font-size: 1.8em;
 }
 
-.score-panel .hearts li {
+.hearts li {
     list-style: none;
     display: inline-block;
 }
 
-.score-panel .score-container,
-.score-panel .level-container {
+.score-container,
+.level-container {
     width: 35%;
     padding: 6% 0 5% 0;
     font: 700 25px 'Lato', sans-serif;
@@ -74,8 +89,9 @@ body {
 
 
 /*
- * Hide elements on webpage
+ * Used to hide certain elements on webpage
  */
+ 
 .hide {
     display: none;
 }

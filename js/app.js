@@ -78,7 +78,7 @@ class Player {
         this.y = y;
         this.sprite = 'images/char-princess-girl.png';
         this.name = 'The princess';
-        this.gameStarted = false;
+        this.gameStarted = false;   // Determines if player and enemies are allowed to move
         this.level = 1;
         this.lives = 3;
         this.score = 0;
@@ -98,7 +98,7 @@ class Player {
      */
     selectPlayer(sprite) {
         this.sprite = sprite;
-        switch (this.sprite) {
+        switch (sprite) {
             case 'images/char-princess-girl.png':
                 this.name = 'The princess';
                 break;
@@ -121,12 +121,14 @@ class Player {
      * Start new game
      */
     startGame() {
-        // Reset level, lives and score and update hearts in score panel
+        // Reset level, lives, score, no.of enemies avoided
         this.level = 1;
         this.lives = 3;
         this.score = 0;
         this.enemiesAvoided = 0;
-        resetHearts();
+
+        // Show all hearts in score panel
+        showAllHearts();
 
         // Allow player to move
         this.gameStarted = true;
@@ -134,6 +136,8 @@ class Player {
 
     /**
      * Move player according to user input
+     * Allowed coordinates for player: 0 <= x <= 404
+     * 85 <= y <= 390
      * @param {string} inputKey - arrow key pressed by the user
      */
     handleInput(inputKey) {
@@ -165,9 +169,9 @@ class Player {
         document.querySelector('.score').innerHTML =`Score: ${this.score}`;
         document.querySelector('.level').innerHTML = `Level: ${this.level}`;
     }
-    
+
     /**
-     * Update player life, score and position in case of collition with enemy
+     * Reset player in initial position, decrease no. of lives and score
      */
     meetEnemy() {
         this.reset();
@@ -184,11 +188,11 @@ class Player {
      * Update player life, score and position if player reaches the water
      */
     reachWater() {
-        this.reset();
         this.score += 5 + this.level;
+        this.reset();
     }
 
-    /** 
+    /**
      * Increase number of enemies avoided, when an enemy reaches right side of map
      * Increase level every 5 avoided enemies
      */
@@ -197,7 +201,7 @@ class Player {
         this.level = 1 + Math.floor(this.enemiesAvoided/5);
     }
 
-    /** 
+    /**
      * Update score when player collects a gem
      * No. of points depends on gem type
      * @param {string} img - sprite of gem that was collected
@@ -237,7 +241,7 @@ class Player {
         } else {
             document.querySelector('.win-header').innerHTML = `${this.name} wins, with ${this.score} points!`;
         }
-        
+
         // Hide score panel, show Win/Lose message
         document.querySelector('.score-panel').classList.add('hide');
         document.querySelector('.win-lose-message').classList.remove('hide');
@@ -250,7 +254,7 @@ class Player {
 class Gem {
     /**
      * Create a gem
-     * no parameters, random position and image for new gem
+     * no parameters needed, random position and image for new gem
      */
     constructor(){
         this.x = gemX[Math.floor(Math.random() * 5)];
@@ -286,7 +290,6 @@ class Gem {
         this.x = gemX[Math.floor(Math.random() * 5)];
         this.y = gemY[Math.floor(Math.random() * 3)]
         this.sprite = gemSprite[Math.floor(Math.random() * 3)];
-
     }
 }
 
@@ -307,9 +310,12 @@ const gameEnemies = [enemy1, enemy2, enemy3];
 // X and Y coordinates for placing gems on each row/column of stones
 const gemX = [0, 101, 202, 303, 404];
 const gemY = [80, 165, 250];
-const gemSprite = [ 'images/Gem Blue-130.png',
-                    'images/Gem Green-130.png',
-                    'images/Key-130.png'];
+// Gem images have been resized to fit the squares
+const gemSprite = [
+    'images/Gem Blue-130.png',
+    'images/Gem Green-130.png',
+    'images/Key-130.png'
+];
 
 const gem1 = new Gem();
 const gem2 = new Gem();
@@ -365,6 +371,15 @@ document.querySelector('.fa-sync-alt').addEventListener('click', function (e) {
     // Hide "Win/Lose message", show "Select player" menu
     document.querySelector('.win-lose-message').classList.add('hide');
     document.querySelector('.select-player').classList.remove('hide');
+
+    // Reset all enemies and gems
+    allEnemies.forEach(function(enemy) {
+        enemy.reset();
+    });
+
+    allGems.forEach(function(gem) {
+        gem.reset();
+    });
 });
 
 
@@ -381,10 +396,10 @@ function removeHeart() {
 /**
  * Reset score panel to display 3 full lives when user restarts the game
  */
-function resetHearts() {
+function showAllHearts() {
     const hearts = document.querySelectorAll('.fa-heart');
-    for (heart of hearts) {
+    hearts.forEach(function(heart) {
         heart.classList.remove('far');
         heart.classList.add('fas');
-    }
+    });
 }
